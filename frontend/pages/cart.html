@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart - E-Store</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="nav-container">
+                <h1 class="logo"><a href="/">E-Store</a></h1>
+                <div class="nav-links">
+                    <a href="/">Home</a>
+                    <a href="/cart" class="active">Cart (<span id="cart-count">0</span>)</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            <h1>Shopping Cart</h1>
+            <div class="cart-container">
+                <div class="cart-items" id="cart-items">
+                    <!-- Cart items will be loaded here -->
+                </div>
+                <div class="cart-summary" id="cart-summary">
+                    <!-- Cart summary will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 E-Store. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../js/cart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCartPage();
+        });
+    </script>
+</body>
+</html>

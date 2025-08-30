@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Store - Your Ultimate Shopping Destination</title>
+    <link rel="stylesheet" href="css/style.css">
+    <meta name="description" content="Discover amazing products at great prices. Shop electronics, fashion, home goods and more at E-Store.">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="nav-container">
+                <h1 class="logo"><a href="/">E-Store</a></h1>
+                <div class="nav-links" id="nav-links">
+                    <!-- Navigation will be populated by JavaScript -->
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="hero-content">
+                <h1>Welcome to E-Store</h1>
+                <p>Discover amazing products at unbeatable prices</p>
+                <div class="hero-cta">
+                    <a href="#products" class="btn btn-primary hero-btn">Shop Now</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="search-section">
+            <div class="container">
+                <div class="search-bar">
+                    <input type="text" id="search-input" placeholder="Search for products, brands, or categories...">
+                    <button id="search-btn">Search</button>
+                </div>
+                
+                <div class="category-filters">
+                    <h3>Shop by Category</h3>
+                    <div class="category-buttons">
+                        <button class="category-btn active" onclick="filterByCategory('')">All Products</button>
+                        <button class="category-btn" onclick="filterByCategory('Electronics')">Electronics</button>
+                        <button class="category-btn" onclick="filterByCategory('Clothing')">Clothing</button>
+                        <button class="category-btn" onclick="filterByCategory('Home')">Home</button>
+                        <button class="category-btn" onclick="filterByCategory('Sports')">Sports</button>
+                        <button class="category-btn" onclick="filterByCategory('Books')">Books</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="products-section" id="products">
+            <div class="container">
+                <h2>Our Products</h2>
+                <div class="products-controls">
+                    <div class="sort-controls">
+                        <label for="sort-select">Sort by:</label>
+                        <select id="sort-select" onchange="handleSortChange()">
+                            <option value="-createdAt">Newest First</option>
+                            <option value="price">Price: Low to High</option>
+                            <option value="-price">Price: High to Low</option>
+                            <option value="name">Name: A-Z</option>
+                            <option value="-name">Name: Z-A</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="products-grid" id="products-grid">
+                    <!-- Products will be loaded here -->
+                </div>
+                
+                <div id="loading" class="loading">Loading products...</div>
+                
+                <div id="pagination" class="pagination-container">
+                    <!-- Pagination will be loaded here -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>E-Store</h3>
+                    <p>Your ultimate shopping destination for quality products at great prices.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/about">About Us</a></li>
+                        <li><a href="/contact">Contact</a></li>
+                        <li><a href="/terms">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Customer Service</h4>
+                    <ul>
+                        <li><a href="/help">Help Center</a></li>
+                        <li><a href="/shipping">Shipping Info</a></li>
+                        <li><a href="/returns">Returns</a></li>
+                        <li><a href="/support">Support</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 E-Store. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/auth.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        // Category filtering
+        function filterByCategory(category) {
+            currentCategory = category;
+            currentPage = 1;
+            loadProducts(1, category, currentSearch);
+            
+            // Update active category button
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+        
+        // Sort handling
+        function handleSortChange() {
+            const sortValue = document.getElementById('sort-select').value;
+            loadProducts(currentPage, currentCategory, currentSearch, sortValue);
+        }
+    </script>
+</body>
+</html>

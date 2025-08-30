@@ -1,0 +1,56 @@
+[
+    {
+      "id": "1",
+      "name": "Wireless Headphones",
+      "price": 99.99,
+      "description": "High-quality wireless headphones with noise cancellation",
+      "image": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400",
+      "category": "Electronics",
+      "stock": 50
+    },
+    {
+      "id": "2",
+      "name": "Smartphone",
+      "price": 699.99,
+      "description": "Latest smartphone with advanced camera and long battery life",
+      "image": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400",
+      "category": "Electronics",
+      "stock": 30
+    },
+    {
+      "id": "3",
+      "name": "Laptop",
+      "price": 1299.99,
+      "description": "Powerful laptop for work and gaming",
+      "image": "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400",
+      "category": "Electronics",
+      "stock": 20
+    },
+    {
+      "id": "4",
+      "name": "Running Shoes",
+      "price": 129.99,
+      "description": "Comfortable running shoes for daily exercise",
+      "image": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400",
+      "category": "Sports",
+      "stock": 75
+    },
+    {
+      "id": "5",
+      "name": "Coffee Maker",
+      "price": 89.99,
+      "description": "Automatic coffee maker with programmable timer",
+      "image": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400",
+      "category": "Home",
+      "stock": 40
+    },
+    {
+      "id": "6",
+      "name": "Backpack",
+      "price": 59.99,
+      "description": "Durable backpack perfect for travel and daily use",
+      "image": "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400",
+      "category": "Fashion",
+      "stock": 60
+    }
+  ]

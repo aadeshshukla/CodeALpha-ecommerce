@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - E-Store</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="nav-container">
+                <h1 class="logo"><a href="/">E-Store</a></h1>
+                <div class="nav-links">
+                    <a href="/">Home</a>
+                    <a href="/login">Login</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="auth-container">
+                <div class="auth-form">
+                    <h1>Create Your Account</h1>
+                    <p class="auth-subtitle">Join us today and start shopping!</p>
+                    
+                    <form id="register-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="firstName">First Name</label>
+                                <input type="text" id="firstName" name="firstName" required placeholder="Enter your first name">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="lastName">Last Name</label>
+                                <input type="text" id="lastName" name="lastName" required placeholder="Enter your last name">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" name="email" required placeholder="Enter your email">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" name="password" required placeholder="Create a password">
+                            <small class="form-help">Password must be at least 6 characters with uppercase, lowercase, and number</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirm Password</label>
+                            <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="Confirm your password">
+                        </div>
+                        
+                        <div class="form-group checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="agreeTerms" required>
+                                <span class="checkmark"></span>
+                                I agree to the <a href="#" target="_blank">Terms of Service</a> and <a href="#" target="_blank">Privacy Policy</a>
+                            </label>
+                        </div>
+                        
+                        <button type="submit" class="auth-btn" id="register-btn">
+                            <span class="btn-text">Create Account</span>
+                            <span class="btn-spinner" style="display: none;">Creating account...</span>
+                        </button>
+                    </form>
+                    
+                    <div class="auth-links">
+                        <p>Already have an account? <a href="/login">Login here</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 E-Store. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../js/auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Redirect if already logged in
+            if (isAuthenticated()) {
+                window.location.href = '/';
+                return;
+            }
+            
+            initializeRegisterForm();
+        });
+    </script>
+</body>
+</html>
