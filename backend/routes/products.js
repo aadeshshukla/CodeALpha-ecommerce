@@ -9,6 +9,8 @@ const router = express.Router();
 // @access  Public
 router.get('/', async (req, res) => {
     try {
+        console.log('📦 Fetching products...');
+        
         const {
             page = 1,
             limit = 12,
@@ -33,21 +35,30 @@ router.get('/', async (req, res) => {
         }
 
         if (search) {
-            filter.$text = { $search: search };
+            filter.$or = [
+                { name: { $regex: search, $options: 'i' } },
+                { description: { $regex: search, $options: 'i' } },
+                { tags: { $in: [new RegExp(search, 'i')] } }
+            ];
         }
+
+        console.log('🔍 Filter:', filter);
 
         // Calculate pagination
         const skip = (page - 1) * limit;
 
-        // Execute query
+        // Execute query with timeout
         const products = await Product.find(filter)
             .sort(sort)
             .skip(skip)
             .limit(Number(limit))
-            .select('-__v');
+            .select('-__v')
+            .maxTimeMS(30000); // 30 second timeout
+
+        console.log(`✅ Found ${products.length} products`);
 
         // Get total count for pagination
-        const total = await Product.countDocuments(filter);
+        const total = await Product.countDocuments(filter).maxTimeMS(30000);
 
         res.json({
             success: true,
@@ -63,10 +74,20 @@ router.get('/', async (req, res) => {
             }
         });
     } catch (error) {
-        console.error('Get products error:', error);
+        console.error('❌ Get products error:', error);
+        
+        if (error.name === 'MongooseError' && error.message.includes('buffering timed out')) {
+            return res.status(503).json({
+                success: false,
+                message: 'Database connection timeout. Please try again.',
+                error: 'DATABASE_TIMEOUT'
+            });
+        }
+        
         res.status(500).json({
             success: false,
-            message: 'Server error'
+            message: 'Error fetching products',
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
         });
     }
 });
@@ -76,7 +97,9 @@ router.get('/', async (req, res) => {
 // @access  Public
 router.get('/:id', async (req, res) => {
     try {
-        const product = await Product.findById(req.params.id);
+        console.log(`📦 Fetching product: ${req.params.id}`);
+        
+        const product = await Product.findById(req.params.id).maxTimeMS(30000);
 
         if (!product || !product.isActive) {
             return res.status(404).json({
@@ -85,15 +108,34 @@ router.get('/:id', async (req, res) => {
             });
         }
 
+        console.log(`✅ Found product: ${product.name}`);
+
         res.json({
             success: true,
             data: { product }
         });
     } catch (error) {
-        console.error('Get product error:', error);
+        console.error('❌ Get product error:', error);
+        
+        if (error.name === 'CastError') {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid product ID'
+            });
+        }
+        
+        if (error.name === 'MongooseError' && error.message.includes('buffering timed out')) {
+            return res.status(503).json({
+                success: false,
+                message: 'Database connection timeout. Please try again.',
+                error: 'DATABASE_TIMEOUT'
+            });
+        }
+        
         res.status(500).json({
             success: false,
-            message: 'Server error'
+            message: 'Error fetching product',
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
         });
     }
 });
@@ -114,12 +156,13 @@ router.get('/category/:category', async (req, res) => {
         })
             .sort(sort)
             .skip(skip)
-            .limit(Number(limit));
+            .limit(Number(limit))
+            .maxTimeMS(30000);
 
         const total = await Product.countDocuments({
             category: { $regex: new RegExp(category, 'i') },
             isActive: true
-        });
+        }).maxTimeMS(30000);
 
         res.json({
             success: true,
@@ -133,10 +176,20 @@ router.get('/category/:category', async (req, res) => {
             }
         });
     } catch (error) {
-        console.error('Get products by category error:', error);
+        console.error('❌ Get products by category error:', error);
+        
+        if (error.name === 'MongooseError' && error.message.includes('buffering timed out')) {
+            return res.status(503).json({
+                success: false,
+                message: 'Database connection timeout. Please try again.',
+                error: 'DATABASE_TIMEOUT'
+            });
+        }
+        
         res.status(500).json({
             success: false,
-            message: 'Server error'
+            message: 'Error fetching products by category',
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
         });
     }
 });
@@ -154,7 +207,7 @@ router.post('/', protect, authorize('admin'), async (req, res) => {
             data: { product }
         });
     } catch (error) {
-        console.error('Create product error:', error);
+        console.error('❌ Create product error:', error);
         res.status(400).json({
             success: false,
             message: error.message
@@ -186,7 +239,7 @@ router.put('/:id', protect, authorize('admin'), async (req, res) => {
             data: { product }
         });
     } catch (error) {
-        console.error('Update product error:', error);
+        console.error('❌ Update product error:', error);
         res.status(400).json({
             success: false,
             message: error.message
@@ -217,7 +270,7 @@ router.delete('/:id', protect, authorize('admin'), async (req, res) => {
             message: 'Product deleted successfully'
         });
     } catch (error) {
-        console.error('Delete product error:', error);
+        console.error('❌ Delete product error:', error);
         res.status(500).json({
             success: false,
             message: 'Server error'

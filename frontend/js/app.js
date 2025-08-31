@@ -1,4 +1,4 @@
-// Enhanced main application JavaScript with authentication
+// Enhanced main application JavaScript with better error handling
 let allProducts = [];
 let currentPage = 1;
 let totalPages = 1;
@@ -13,24 +13,41 @@ document.addEventListener('DOMContentLoaded', function() {
     setupCategoryFilter();
 });
 
-// Load products from API with pagination and filters
-async function loadProducts(page = 1, category = '', search = '') {
+// Load products from API with better error handling
+async function loadProducts(page = 1, category = '', search = '', sort = '-createdAt') {
     try {
         const loadingElement = document.getElementById('loading');
         if (loadingElement) {
             loadingElement.style.display = 'block';
+            loadingElement.textContent = 'Loading products...';
         }
 
         // Build query parameters
         const params = new URLSearchParams({
             page: page,
-            limit: 12
+            limit: 12,
+            sort: sort
         });
 
         if (category) params.append('category', category);
         if (search) params.append('search', search);
 
-        const response = await fetch(`/api/products?${params}`);
+        console.log('🔄 Loading products with params:', params.toString());
+
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+
+        const response = await fetch(`/api/products?${params}`, {
+            signal: controller.signal
+        });
+
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+        }
+
         const data = await response.json();
 
         if (data.success) {
@@ -40,17 +57,47 @@ async function loadProducts(page = 1, category = '', search = '') {
             
             displayProducts(allProducts);
             displayPagination(data.data.pagination);
+            
+            console.log('✅ Products loaded successfully');
         } else {
-            throw new Error('Failed to load products');
+            throw new Error(data.message || 'Failed to load products');
         }
     } catch (error) {
-        console.error('Error loading products:', error);
+        console.error('❌ Error loading products:', error);
+        
         const loadingElement = document.getElementById('loading');
         if (loadingElement) {
-            loadingElement.textContent = 'Error loading products. Please try again.';
+            if (error.name === 'AbortError') {
+                loadingElement.innerHTML = `
+                    <div class="error-message">
+                        <p>⏱️ Request timed out. Please check your connection and try again.</p>
+                        <button class="btn btn-primary" onclick="loadProducts()">Retry</button>
+                    </div>
+                `;
+            } else if (error.message.includes('DATABASE_TIMEOUT')) {
+                loadingElement.innerHTML = `
+                    <div class="error-message">
+                        <p>🔄 Database is connecting. Please wait a moment and try again.</p>
+                        <button class="btn btn-primary" onclick="loadProducts()">Retry</button>
+                    </div>
+                `;
+            } else {
+                loadingElement.innerHTML = `
+                    <div class="error-message">
+                        <p>❌ Error loading products: ${error.message}</p>
+                        <button class="btn btn-primary" onclick="loadProducts()">Retry</button>
+                    </div>
+                `;
+            }
         }
+        
+        // Show user-friendly notification
+        showNotification('Failed to load products. Please try again.', 'error');
     }
 }
+
+// Rest of the app.js file remains the same...
+// (keeping the previous implementation for other functions)
 
 // Display products in grid
 function displayProducts(products) {
