@@ -6,7 +6,7 @@ const connectDB = require('../config/database');
 const User = require('../models/User');
 const Product = require('../models/Product');
 
-// Sample products data
+// Sample products data (keeping the existing products)
 const products = [
     {
         name: "Wireless Bluetooth Headphones",
@@ -123,7 +123,7 @@ const products = [
                 alt: "Travel Backpack Pro"
             }
         ],
-        category: "Fashion",
+        category: "Clothing",
         brand: "TravelGear",
         stock: 60,
         sku: "TG-BP-006",
@@ -133,103 +133,91 @@ const products = [
             { name: "Material", value: "Water-resistant Nylon" }
         ],
         tags: ["backpack", "travel", "laptop", "durable"]
-    },
-    {
-        name: "Wireless Charging Stand",
-        description: "Fast wireless charging stand compatible with all Qi-enabled devices. Features adjustable viewing angle and LED charging indicator.",
-        price: 49.99,
-        images: [
-            {
-                url: "https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?w=800",
-                alt: "Wireless Charging Stand"
-            }
-        ],
-        category: "Electronics",
-        brand: "ChargeTech",
-        stock: 100,
-        sku: "CT-WC-007",
-        specifications: [
-            { name: "Power Output", value: "15W Fast Charging" },
-            { name: "Compatibility", value: "Qi-enabled devices" },
-            { name: "Angle", value: "Adjustable 0-60°" }
-        ],
-        tags: ["wireless", "charging", "stand", "fast"]
-    },
-    {
-        name: "Fitness Tracker Watch",
-        description: "Advanced fitness tracker with heart rate monitoring, GPS, sleep tracking, and 7-day battery life. Track your health and fitness goals.",
-        price: 199.99,
-        images: [
-            {
-                url: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800",
-                alt: "Fitness Tracker Watch"
-            }
-        ],
-        category: "Sports",
-        brand: "FitTech",
-        stock: 80,
-        sku: "FT-FW-008",
-        specifications: [
-            { name: "Battery Life", value: "7 days" },
-            { name: "Water Rating", value: "50m waterproof" },
-            { name: "Sensors", value: "Heart Rate, GPS, Accelerometer" }
-        ],
-        tags: ["fitness", "tracker", "watch", "health"]
     }
 ];
 
-// Sample admin user
-const adminUser = {
-    firstName: "Admin",
-    lastName: "User",
-    email: "admin@ecommerce.com",
-    password: "Admin123!",
-    role: "admin"
-};
-
-// Sample regular user
-const regularUser = {
-    firstName: "John",
-    lastName: "Doe",
-    email: "john.doe@example.com",
-    password: "User123!",
-    role: "user"
-};
+// Sample users
+const users = [
+    {
+        firstName: "Admin",
+        lastName: "User",
+        email: "admin@ecommerce.com",
+        password: "Admin123!",
+        role: "admin"
+    },
+    {
+        firstName: "John",
+        lastName: "Doe",
+        email: "john.doe@example.com",
+        password: "User123!",
+        role: "user"
+    },
+    {
+        firstName: "Aadesh",
+        lastName: "Shukla",
+        email: "aadesh.shukla@example.com",
+        password: "Dev123!",
+        role: "user"
+    }
+];
 
 async function seedDatabase() {
     try {
+        console.log('🌱 Starting database seeding...');
+        console.log('👤 Seeding by: aadeshshukla');
+        console.log('📅 Date:', new Date().toISOString());
+        
         // Connect to database
         await connectDB();
-
+        
+        console.log('🧹 Clearing existing data...');
+        
         // Clear existing data
-        console.log('Clearing existing data...');
         await User.deleteMany({});
         await Product.deleteMany({});
-
+        
+        console.log('👥 Creating users...');
+        
         // Create users
-        console.log('Creating users...');
-        await User.create([adminUser, regularUser]);
-        console.log('Users created successfully');
+        const createdUsers = await User.create(users);
+        console.log(`✅ Created ${createdUsers.length} users successfully`);
 
+        console.log('📦 Creating products...');
+        
         // Create products
-        console.log('Creating products...');
-        await Product.create(products);
-        console.log('Products created successfully');
+        const createdProducts = await Product.create(products);
+        console.log(`✅ Created ${createdProducts.length} products successfully`);
 
-        console.log('Database seeded successfully!');
-        console.log('\nDefault Admin User:');
-        console.log('Email: admin@ecommerce.com');
-        console.log('Password: Admin123!');
-        console.log('\nDefault Test User:');
-        console.log('Email: john.doe@example.com');
-        console.log('Password: User123!');
+        console.log('\n🎉 Database seeded successfully!');
+        console.log('\n📋 Login Credentials:');
+        console.log('👑 Admin User:');
+        console.log('   Email: admin@ecommerce.com');
+        console.log('   Password: Admin123!');
+        console.log('\n👤 Test Users:');
+        console.log('   Email: john.doe@example.com');
+        console.log('   Password: User123!');
+        console.log('   ');
+        console.log('   Email: aadesh.shukla@example.com');
+        console.log('   Password: Dev123!');
+        
+        console.log('\n🚀 Next Steps:');
+        console.log('1. Start the server: npm run dev');
+        console.log('2. Visit: http://localhost:3000');
+        console.log('3. Login with admin credentials to access all features');
 
         process.exit(0);
     } catch (error) {
-        console.error('Error seeding database:', error);
+        console.error('❌ Error seeding database:', error);
         process.exit(1);
     }
 }
+
+// Handle process termination
+process.on('SIGINT', async () => {
+    console.log('\nReceived SIGINT. Closing database connection...');
+    await mongoose.connection.close();
+    process.exit(0);
+});
 
 // Run seeder
 seedDatabase();
